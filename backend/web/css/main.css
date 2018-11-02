@@ -1,0 +1,25 @@
+.form-group{
+	float: left;
+	width: 300px;
+	margin-right: 50px;
+}
+.node-form{
+	width: 800px;
+}
+.field-node-status{
+	clear:both
+}
+.button-group{
+	width: auto;
+	clear:both;
+	
+	
+
+}
+.btn{   
+	background: #64b9fc;
+    border-radius: 4px;
+    color: #ffffff;
+    width: auto;
+   
+}
