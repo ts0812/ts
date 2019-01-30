@@ -12,7 +12,6 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [
-       
         'api' => ['class' => 'backend\modules\api\Module'],
         'platform' => ['class' => 'backend\modules\platform\Module'],
     ],

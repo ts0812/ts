@@ -22,12 +22,9 @@ $this->title = Yii::t('app', '角色管理');
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
     	'layout'=>"<div class='box-body table-responsive'>{items}</div><div class='row box-body'><div class='col-lg-7'>{summary}</div><div class='col-lg-5 text-right'>{pager}</div></div>",
-        //'filterModel' => $searchModel,
         'columns' => [
            // ['class' => 'yii\grid\SerialColumn'],
-
             'role_name',
-            //'role_code',
             'functional_description',
 			[
 				'attribute' => 'role_status',

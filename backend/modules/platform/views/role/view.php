@@ -13,7 +13,6 @@ $this->title = '查看详情';?>
         'attributes' => [
             'role_id',
             'role_name',
-            'role_code',
             'functional_description',
             [
 				'attribute' => 'role_status',

@@ -1,14 +1,12 @@
-<?php 
+<?php
 /**
  * @link http://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
+ *
+ * @SuppressWarnings(PHPMD)
  */
-
-namespace common\models;
-
-use Yii;
-use yii\base\Model;
+namespace common\helpers;
 
 /**
  * ArrayHelper provides additional array functionality that you can use in your
@@ -18,8 +16,8 @@ use yii\base\Model;
  * @since 2.0
  * @SuppressWarnings(PHPMD)
  */
-class Common extends \yii\helpers\ArrayHelper {
-
+class ArrayHelper extends \yii\helpers\ArrayHelper
+{
     /**
      * ------------------------------------------
      * 把返回的数据集转换成Tree
@@ -31,24 +29,24 @@ class Common extends \yii\helpers\ArrayHelper {
      * @return array
      * ------------------------------------------
      */
-    public static function list_to_tree($list, $pk = 'id', $pid = 'pid', $child = '_child', $root = 0) {
+    public static function listToTree($list, $pk='id', $pid = 'pid', $child = '_child', $root = 0) {
         // 创建Tree
         $tree = [];
-        if (is_array($list)) {
+        if(is_array($list)) {
             // 创建基于主键的数组引用
             $refer = array();
             foreach ($list as $key => $data) {
-                $refer[$data[$pk]] = & $list[$key];
+                $refer[$data[$pk]] =& $list[$key];
             }
             foreach ($list as $key => $data) {
                 // 判断是否存在parent
-                $parentId = $data[$pid];
+                $parentId =  $data[$pid];
                 if ($root == $parentId) {
-                    $tree[] = & $list[$key];
-                } else {
+                    $tree[] =& $list[$key];
+                }else{
                     if (isset($refer[$parentId])) {
-                        $parent = & $refer[$parentId];
-                        $parent[$child][] = & $list[$key];
+                        $parent =& $refer[$parentId];
+                        $parent[$child][] =& $list[$key];
                     }
                 }
             }
@@ -58,7 +56,7 @@ class Common extends \yii\helpers\ArrayHelper {
 
     /**
      * ---------------------------------------------------
-     * 将list_to_tree的树还原成列表
+     * 将listToTree的树还原成列表
      * @param  array $tree  原来的树
      * @param  string $child 孩子节点的键
      * @param  string $order 排序显示的键，一般是主键 升序排列
@@ -66,18 +64,18 @@ class Common extends \yii\helpers\ArrayHelper {
      * @return array        返回排过序的列表数组
      * ---------------------------------------------------
      */
-    public static function tree_to_list($tree, $child = '_child', $order = 'id', &$list = []) {
-        if (is_array($tree)) {
+    public static function treeToList($tree, $child = '_child', $order='id', &$list = []){
+        if(is_array($tree)) {
             $refer = [];
             foreach ($tree as $key => $value) {
                 $reffer = $value;
-                if (isset($reffer[$child])) {
+                if(isset($reffer[$child])){
                     unset($reffer[$child]);
-                    static::tree_to_list($value[$child], $child, $order, $list);
+                    static::treeToList($value[$child], $child, $order, $list);
                 }
                 $list[] = $reffer;
             }
-            $list = static::list_sort_by($list, $order, $sortby = 'asc');
+            $list = static::listSortBy($list, $order, $sortby='asc');
         }
         return $list;
     }
@@ -92,8 +90,8 @@ class Common extends \yii\helpers\ArrayHelper {
      * @return array|boolean
      * --------------------------------------------------
      */
-    public static function list_sort_by($list, $field, $sortby = 'asc') {
-        if (is_array($list)) {
+    public static function listSortBy($list, $field, $sortby = 'asc') {
+        if(is_array($list)){
             $refer = $resultSet = array();
             foreach ($list as $i => $data)
                 $refer[$i] = &$data[$field];
@@ -108,7 +106,7 @@ class Common extends \yii\helpers\ArrayHelper {
                     natcasesort($refer);
                     break;
             }
-            foreach ($refer as $key => $val)
+            foreach ( $refer as $key=> $val)
                 $resultSet[] = &$list[$key];
             return $resultSet;
         }
@@ -124,20 +122,19 @@ class Common extends \yii\helpers\ArrayHelper {
      * @return array
      * ---------------------------------------
      */
-    public static function format_tree($tree, $title = 'title', $level = 0) {
+    public static function formatTree($tree, $title = 'title', $level = 0){
         static $list;
         /* 按层级格式的字符串 */
-        $tmp_str = str_repeat("　　", $level) . "└";
+        $tmp_str=str_repeat("　　",$level)."└";
         $level == 0 && $tmp_str = '';
 
         foreach ($tree as $key => $value) {
-            $value[$title] = $tmp_str . $value[$title];
+            $value[$title] = $tmp_str.$value[$title];
             $arr = $value;
-            if (isset($arr['_child']))
-                unset($arr['_child']);
+            if (isset($arr['_child'])) unset($arr['_child']);
             $list[] = $arr;
             if (array_key_exists('_child', $value)) {
-                static::format_tree($value['_child'], $title, $level + 1);
+                static::formatTree($value['_child'], $title, $level+1);
             }
         }
         return $list;
@@ -156,30 +153,28 @@ class Common extends \yii\helpers\ArrayHelper {
      * @return array
      * ---------------------------------------
      */
-    public static function listDataLevel($list, $key, $value, $pk = 'id', $pid = 'pid', $root = 0) {
+    public static function listDataLevel($list, $key, $value, $pk = 'id', $pid = 'pid', $root = 0){
         if (!is_array($list)) {
             return [];
         }
         $_tmp = $list;
         /* 判断$list是否由findAll生成的数据 */
         if (array_shift($_tmp) instanceof \yii\base\Model) {
-            $list = array_map(function($record) {
-                return $record->attributes;
-            }, $list);
+            $list = array_map(function($record) {return $record->attributes;},$list);
         }
         unset($_tmp);
-        $tree = static::list_to_tree($list, $pk, $pid, '_child', $root);
-        return static::map(static::format_tree($tree, $value), $key, $value);
+        $tree = static::listToTree($list,$pk,$pid,'_child',$root);
+        return static::map( static::formatTree($tree, $value), $key, $value);
     }
 
     /**
      * ---------------------------------------
      * 生成jQuery tree所需的数据
-     * @param $list array 由self::list_to_tree生成的数据
+     * @param $list array 由self::listToTree生成的数据
      * @return array
      * ---------------------------------------
      */
-    public static function jstree($list) {
+    public static function jstree($list){
         $node = [];
         if ($list) {
             foreach ($list as $value) {
@@ -199,6 +194,31 @@ class Common extends \yii\helpers\ArrayHelper {
         return $node;
     }
 
+    /**
+     * ---------------------------------------
+     * 一维转一维层级数组
+     * @param array $arr 要转的数组
+     * @param string $pk 主键
+     * @param string $title__field 标题字段名
+     * @param string $pid_field 父id字段名
+     * @param int $pid 父id
+     * @param int $level 级别
+     * @return array
+     * ---------------------------------------
+     */
+    public static function listToLevellist($arr ,$pk ='id',$title__field = 'name',  $pid_field = 'pid',$pid=0,$level=0){
+        static $list = [];
+        foreach($arr as $v){
+            if($v[$pid_field]==$pid){
+                if($level == 0)
+                    $list[$v[$pk]] = $v[$title__field];
+                else
+                    $list[$v[$pk]] = str_repeat("　",$level)."|__".$v[$title__field];
+                self::listToLevellist($arr, $pk ,$title__field ,$pid_field ,$v[$pk],$level+1);
+            }
+        }
+        return $list;
+    }
     /**
      * ---------------------------------------
      * 一维转一维层级数组
@@ -241,30 +261,4 @@ class Common extends \yii\helpers\ArrayHelper {
             }
         }
     }
-    //获取菜单
-    public static function getMenu(int $userId, int $roleId) {
-        $menus = [];
-        $authUrl = []; 
-        //用户id为1的是 超级管理员
-        if ($userId == 1 || $roleId == 1) {
-            $nodeRoles = Node::find()->where(['status' => 1])->orderBy('sort DESC')->asArray()->all();
-        } else {
-            $nodeRoles = (new \yii\db\Query())
-                    ->select('*')
-                    ->from('admin_user_node_role AS r')
-                    ->leftJoin('admin_user_node AS n', 'r.node_id = n.node_id')
-                    ->where(['n.status' => 1, 'r.role_id' => $roleId])
-                    ->orderBy('n.sort DESC')
-                    ->All();
-        }
-        foreach ($nodeRoles as $row) {
-            $node = $row;
-            $authUrl[] = $node['url'] ? $node['url'] : '#';
-            if ($node['is_menu'] == 1)
-                $menus[] = ['pid' => $node['pid'], 'node_id' => $node['node_id'], 'label' => $node['name'], 'url' => ['/' . $node['url']], 'icon' => $node['icon']];
-        }
-        $tree = ArrayHelper::list_to_tree($menus, 'node_id', 'pid', 'items');
-        return [$tree, $authUrl];
-    }
-
 }

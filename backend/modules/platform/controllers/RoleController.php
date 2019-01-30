@@ -1,9 +1,10 @@
 <?php 
-namespace backend\modules\account\controllers;
+namespace backend\modules\platform\controllers;
 
+use backend\models\NodeRole;
 use Yii;
 use backend\models\Role;
-use backend\modules\account\models\RoleSearch;
+use backend\modules\platform\models\RoleSearch;
 use backend\controllers\BaseController;
 use yii\web\NotFoundHttpException;
 use backend\models\Node;
@@ -54,7 +55,6 @@ class RoleController extends BaseController
     {
         $model = new Role();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        	$this->addOperationLog(3,'添加角色'.$model->role_name);
             return $this->redirect(['view', 'id' => $model->role_id]);
         }
 
@@ -74,7 +74,6 @@ class RoleController extends BaseController
     {
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        	$this->addOperationLog(3,'编辑角色'.$model->role_name);
             return $this->redirect(['view', 'id' => $model->role_id]);
         }
 
@@ -92,11 +91,8 @@ class RoleController extends BaseController
      */
     public function actionDelete($id)
     {
-    	$this->addOperationLog(3,'删除角色'.\backend\models\Role::getAllRoleName($id));
-        //$this->findModel($id)->delete();
 		$model = $this->findModel($id);
 		$model->role_status = 99;
-        
 		if($model->save()){
 			return $this->redirect(['index']);
 		}
@@ -107,8 +103,9 @@ class RoleController extends BaseController
      */
     public function actionAuth($id)
     {
-        $authId = ArrayHelper::map(\backend\models\NodeRole::findAll(['role_id' => $id]) , 'node_id' , 'node_id'); 
-        if ($ids = Yii::$app->request->post('auth')){   
+        $oldAuth=NodeRole::findAll(['role_id' => $id]);
+        $authId = $oldAuth?ArrayHelper::map($oldAuth, 'node_id' , 'node_id'):[];
+        if ($ids = Yii::$app->request->post('auth')){
             $all = Node::find()->select(['node_id','pid'])->where(['status'=>1])->asArray()->all();
             $idAll = []; //权限路由
             foreach ($ids as $v) { 
@@ -122,18 +119,16 @@ class RoleController extends BaseController
                ArrayHelper::getParents($all, $v,$idAll); 
             }   
             Role::updateAuth($id, $idAll, $authId);
-            $nodes = \backend\models\Node::findAll(['node_id' => $idAll]);
+            $nodes = Node::findAll(['node_id' => $idAll]);
             $node = '';
             if(!empty($nodes)){
                 foreach($nodes as $v){
                     $node = !empty($node)?$node.' '.$v->node_id.':'.$v->name:$v->node_id.':'.$v->name;
                 }
             }
-            $this->addOperationLog(4,'角色权限分配' . \backend\models\Role::getAllRoleName($id).':'. $node);
             return $this->redirect(['index']);
         }
-
-        $list = \backend\models\Node::getAllNode();
+        $list = Node::getAllNode();
         return $this->render('auth', [
             'list' => $list,
             'auth_id' => $authId,

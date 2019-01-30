@@ -39,8 +39,8 @@ class Role extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-                [['role_name', 'role_code','role_type'], 'required', 'message' => ''],
-                [['role_code', 'role_status','role_type'], 'integer'],
+                [['role_name',], 'required', 'message' => ''],
+                [['role_status'], 'integer'],
                 [['role_name'], 'string', 'max' => 20],
                 [['functional_description'], 'string', 'max' => 150],
                 [['role_remark'], 'string', 'max' => 255],
@@ -55,10 +55,8 @@ class Role extends \yii\db\ActiveRecord {
         return [
             'role_id' => '角色id',
             'role_name' => '角色名称',
-            'role_code' => '角色编号',
             'functional_description' => '职能描述',
             'role_status' => '状态',
-            'role_type' => '角色类型',
             'role_remark' => '备注',
             'addtime' => '添加时间',
             'edittime' => '修改时间',

@@ -92,15 +92,14 @@ class Node extends \yii\db\ActiveRecord {
      * @param int $roleId 角色id
      * @return array
      */
-    public static function getNodeMenu(int $userId, int $roleId) {
+    public static function getNodeMenu($userId,$roleId) {
+    	
         $menus = [];
         $authUrl = []; 
         //用户id为1的是 超级管理员
         if ($userId == 1 || $roleId == 1) {
             $nodeRoles = Node::find()->where(['status' => 1])->orderBy('sort DESC')->asArray()->all();
         } else {
-//                        $nodeRoles = NodeRole::find()->joinWith('nodes')->where([NodeRole::tableName().'.role_id' => $roleId , Node::tableName().'.status' => 1])->orderBy('sort DESC')->asArray()->all();
-
             $nodeRoles = (new \yii\db\Query())
                     ->select('*')
                     ->from('admin_user_node_role AS r')
@@ -110,29 +109,13 @@ class Node extends \yii\db\ActiveRecord {
                     ->All();
         }
         foreach ($nodeRoles as $row) {
-//            if($userId == 1 || $roleId == 1)
-//                $node = $row;
-//            else
-//                $node = $row['nodes'];
             $node = $row;
             $authUrl[] = $node['url'] ? $node['url'] : '#';
             if ($node['is_menu'] == 1)
                 $menus[] = ['pid' => $node['pid'], 'node_id' => $node['node_id'], 'label' => $node['name'], 'url' => ['/' . $node['url']], 'icon' => $node['icon']];
         }
-//        var_dump($menus);
-        $tree = ArrayHelper::list_to_tree($menus, 'node_id', 'pid', 'items');
-//        var_dump($tree);
-//        foreach ($tree as $row){
-//            $list[] = $row;
-//            if ($row['pid'] == 0 && isset($row['items']) && !empty($row['items'])){
-//                $items = $row['items'];
-//                unset($row['items']);
-//                foreach ($items as $item){
-//                    $list[] = $item;
-//                }
-//            }
-//        }
-//        var_dump($list);
+        $tree = ArrayHelper::listToTree($menus, 'node_id', 'pid', 'items');
+
         return [$tree, $authUrl];
     }
 
@@ -142,7 +125,7 @@ class Node extends \yii\db\ActiveRecord {
      */
     public static function getAllNode() {
         $data = Node::find()->where(['status' => 1])->orderBy('sort DESC')->asArray()->all();
-        $list = ArrayHelper::list_to_tree($data, 'node_id', 'pid', 'z');
+        $list = ArrayHelper::listToTree($data, 'node_id', 'pid', 'z');
         return $list;
     }
 

@@ -2,17 +2,17 @@
 
 namespace backend\modules\platform\controllers;
 
+use backend\controllers\BaseController;
 use Yii;
 use backend\modules\platform\models\Node;
 use backend\modules\platform\models\NodeSearch;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
  * NodeController implements the CRUD actions for Node model.
  */
-class NodeController extends Controller
+class NodeController extends BaseController
 {
     /**
      * @inheritdoc

@@ -7,7 +7,12 @@ use yii\widgets\ActiveForm;
 /* @var $model app\entity\Role */
 /* @var $form yii\widgets\ActiveForm */
 ?>
+<style>
 
+    #w0{
+        width: 40%;
+    }
+</style>
 <div class="role-form container-fluid">
 
     <?php $form = ActiveForm::begin([
@@ -19,13 +24,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'role_name')->textInput(['maxlength' => true,'placeholder' => '请填写角色名称']) ?>
 
-    <?= $form->field($model, 'role_code')->textInput(['placeholder' => '请填写角色编号']) ?>
 
     <?= $form->field($model, 'functional_description')->textInput(['maxlength' => true,'placeholder' => '请填写职能描述信息']) ?>
 
     
 
-    <?= $form->field($model, 'role_type')->radioList(Yii::$app->params['role_type']) ?>
 <?= $form->field($model, 'role_remark')->textInput(['maxlength' => true,'placeholder' => '请填写备注信息']) ?>
     <?php //= $form->field($model, 'edittime')->textInput() ?>
 

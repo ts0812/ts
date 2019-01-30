@@ -5,12 +5,11 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use backend\assets\AppAsset;
 use yii\helpers\Url;
-AppAsset::addCss($this, 'css/auth.css');
 $this->title = "分配权限";
 ?>
 <body>
     <div class="ibox">
-        <form class="dn-ckx-plugin container-fluid" action="<?= Url::to(['/account/role/auth', 'id' =>(int)Yii::$app->request->get('id')]) ?>" method="post">
+        <form class="dn-ckx-plugin container-fluid" action="<?= Url::to(['/platform/role/auth', 'id' =>(int)Yii::$app->request->get('id')]) ?>" method="post">
             <input name="_csrf-backend" type="hidden" id="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
             <ul class="dn-row-ckx">
                 <li class="dn-level-li" id="treeview" >

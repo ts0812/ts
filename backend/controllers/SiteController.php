@@ -9,10 +9,11 @@ use common\models\LoginForm;
 use backend\models\User;
 use yii\web\Response ;
 use yii\widgets\ActiveForm;
+
 /**
  * Site controller
  */
-class SiteController extends Controller
+class SiteController extends BaseController
 {
     /**
      * {@inheritdoc}
@@ -77,9 +78,7 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
-
         if ($model->load(Yii::$app->request->post()) && $model->login()) { 
-       
             $condition = ['id' => Yii::$app->user->identity->id];
             if (Yii::$app->user->identity->login_time) {
                 $attributes['last_login_time'] = Yii::$app->user->identity->login_time;
