@@ -1,5 +1,6 @@
 <?php
 namespace backend\modules\platform\models;
+use common\models\Common;
 use Yii;
 
 /**
@@ -58,7 +59,7 @@ class Node extends \yii\db\ActiveRecord
             'url' => '权限路径',
             'remark' => '备注',
             'status' => '状态',
-            'sort' => '排序',         
+            'sort' => '排序',
             'icon' => '菜单图标',
             'is_menu' => '是否作为菜单显示',
             'is_api' => '是否为接口',
@@ -71,9 +72,15 @@ class Node extends \yii\db\ActiveRecord
      * @return array
      */
    public static function getAllNodeName() {
+<<<<<<< HEAD
         $nodeRoles = Node::find()->where(['status' => 1])->orderBy('sort DESC')->asArray()->all();
         $levellist = \common\models\Common::list_to_levellist($nodeRoles, 'node_id', 'name', 'pid');
         $list = ['无'] + $levellist;
+=======
+       $nodeRoles = Node::find()->where(['status' => 1])->orderBy('sort DESC')->asArray()->all();
+       $levellist = \common\models\Common::list_to_levellist($nodeRoles, 'node_id', 'name', 'pid');
+       $list = ['无'] + $levellist;
+>>>>>>> 36b0c49bb457780d70fe80ddecd1f17c3003a26b
         return $list;
     }
 }
