@@ -62,12 +62,8 @@ class BaseController extends Controller {
                 $cookie = Yii::$app->response->cookies; $cookie->remove('userAuthKey');Yii::$app->user->logout(false);
                 return $this->redirect(['/site/login'])->send();
             }
-
             // $view->params['username'] = Yii::$app->user->identity->user_account;
-            // $view->params['department'] = \backend\models\User::getAllDepartmentName(Yii::$app->user->identity->department_id);
-           
-           $this->_auth(Yii::$app->user->identity->id, Yii::$app->user->identity->role_id);
-           
+            $this->_auth(Yii::$app->user->identity->id, Yii::$app->user->identity->role_id);
         }
         return parent::beforeAction($action);
     }
@@ -78,21 +74,18 @@ class BaseController extends Controller {
         $nodes = \backend\models\Node::getNodeMenu($userId, $roleId);
 
         list($menu, $authUrl) = $nodes;
-       // var_dump($authUrl);die;
         Yii::$app->view->params['menus'] = $menu;
        
         //排序
-        //$r = Yii::$app->request->pathInfo;   
+        $r = Yii::$app->request->pathInfo;
+        $node = \backend\models\Node::find()->where(['url' => $r])->asArray()->one();
+         if (in_array($r, self::$noAuthUrl)) {
+             return true;
+         }
 
-        //$node = \backend\models\Node::find()->where(['url' => $r])->asArray()->one(); 
-        // $noAuthUrl = Yii::$app->params['noAuthUrl']; 
-        // if (in_array($r, $noAuthUrl)) {   
-        //     return true;
-        // }     
-
-        if($userId !==1&&(empty($node)||!in_array($r, $authUrl))){ //不是系统总账号需要进行权限判断    
-            //return $this->redirect(['/site/autherror'])->send();
-        }   
+        if($roleId !==1&&(empty($node)||!in_array($r, $authUrl))){ //不是系统总账号需要进行权限判断
+            return $this->redirect(['/site/autherror'])->send();
+        }
         return true;
     }
 } 

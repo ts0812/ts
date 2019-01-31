@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace backend\modules\platform\controllers;
 
 use backend\models\NodeRole;
@@ -15,7 +15,6 @@ use common\helpers\ArrayHelper;
  */
 class RoleController extends BaseController
 {
-
     /**
      * Lists all Role models.
      * @return mixed
@@ -108,16 +107,16 @@ class RoleController extends BaseController
         if ($ids = Yii::$app->request->post('auth')){
             $all = Node::find()->select(['node_id','pid'])->where(['status'=>1])->asArray()->all();
             $idAll = []; //权限路由
-            foreach ($ids as $v) { 
+            foreach ($ids as $v) {
                 $val = (int)$v;
                 if($val>0){
                     $idAll[$v] = $val;
                 }
-            } 
+            }
             //权限路由获取父级路由
-            foreach ($ids as $v) { 
-               ArrayHelper::getParents($all, $v,$idAll); 
-            }   
+            foreach ($ids as $v) {
+               ArrayHelper::getParents($all, $v,$idAll);
+            }
             Role::updateAuth($id, $idAll, $authId);
             $nodes = Node::findAll(['node_id' => $idAll]);
             $node = '';
@@ -134,7 +133,55 @@ class RoleController extends BaseController
             'auth_id' => $authId,
         ]);
     }
+    /**
+     * 权限配置
+     * @param $id
+     * @return string|\yii\web\Response
+     */
+    public function actionConfigAuth($id)
+    {
+        $newMcIds = Yii::$app->request->post('mcIds',[]);
+        $mcIds = ArrayHelper::map(NodeRole::findAll(['role_id' => $id]), 'node_id', 'node_id');
+        if (Yii::$app->request->isPost) {
+            $this->updateMapConfigAuth($id, $newMcIds, $mcIds);
+            return $this->redirect(['index']);
+        }
+        $list = Node::find()->where(['status'=>1])->asArray()->all();
+        $list = ArrayHelper::listToTree($list, 'node_id', 'pid', 'z');
+        return $this->render('config-auth', [
+            'list' => $list,
+            'mcIds' => $mcIds,
+        ]);
+    }
 
+    /**
+     * 修改权限
+     * @param int $roleId 用户id
+     * @param array $nowAuthIds 新的权限id 集合
+     * @param array $authIds 旧的权限id 集合
+     */
+    private function updateMapConfigAuth(int $roleId, array $nowAuthIds, array $authIds)
+    {
+        //要添加的权限
+        $add = array_diff($nowAuthIds, $authIds);
+        //要取消的权限
+        $delete = array_diff($authIds, $nowAuthIds);
+        //添加权限 插入数据
+        $model = new NodeRole();
+        if ($add) {
+            foreach ($add as $nodeId) {
+                $model->isNewRecord = true;
+                $model->setAttributes(['node_id' => $nodeId, 'role_id' => $roleId]);
+                $model->save();
+            }
+        }
+        //取消权限 删除数据
+        if ($delete) {
+            foreach ($delete as $nodeId) {
+                Yii::$app->db->createCommand()->delete($model::tableName(), ['node_id' => $nodeId, 'role_id' => $roleId])->execute();
+            }
+        }
+    }
     /**
      * Finds the Role model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -150,5 +197,5 @@ class RoleController extends BaseController
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
-      
+
 }

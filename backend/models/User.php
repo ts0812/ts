@@ -21,6 +21,11 @@ use Yii;
 class User extends \yii\db\ActiveRecord
 {   
     public $passwd;
+    public static $_status = [
+        '禁用',
+        '正常',
+        99 => '删除'
+    ];
     /**
      * @inheritdoc
      */
@@ -35,8 +40,8 @@ class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'create_time', 'update_time'], 'integer'],
-            [['username', 'password'], 'string'],
+            [['status', 'role_id'], 'integer'],
+            [['username', 'password','name'], 'string'],
             [['password_hash'], 'string', 'max' => 80],
             [[ 'email', 'auth_key'], 'string', 'max' => 60],
             [['username'], 'unique'],
@@ -44,9 +49,9 @@ class User extends \yii\db\ActiveRecord
             [['username','password','email','passwd'],'required'],
             [['passwd'],'filterPassword'],
             ['username', 'unique'],
+            [['phone'],'match','pattern'=>'/^[1][3578][0-9]{9}$/'],
             [['login_ip', 'last_login_ip'], 'string', 'max' => 20],
             [['last_login_time', 'login_time', 'create_time', 'update_time'], 'safe'],
-         
         ];
     }
 
@@ -57,16 +62,21 @@ class User extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'role_id'=>'角色',
             'username' => '账号',
             'password_hash' => 'Password Hash',
             'password_reset_token' => 'Password Reset Token',
             'email' => '邮箱',
             'auth_key' => 'Auth Key',
-            'status' => 'Status',
-            'create_time' => 'create_time',
+            'status' => '状态',
+            'phone'=>'手机',
+            'create_time' => '创建时间',
             'update_time' => 'update_time',
             'password' => 'Password',
             'passwd' => '密码',
+            'name'=>'名字',
+            'last_login_time'=>'上次登录时间',
+            'last_login_ip'=>'上次登录ip',
         ];
     }
     public function filterPassword(){
@@ -83,5 +93,12 @@ class User extends \yii\db\ActiveRecord
         $this->password_hash = \Yii::$app->security->generateRandomString();
         $this->password = \Yii::$app->getSecurity()->generatePasswordHash($this->password_hash . $password);
 
+    }
+    /**
+     * 联表role
+     */
+    public function getRole()
+    {
+        return $this->hasOne(\backend\models\Role::className(), ['id' => 'role_id']);
     }
 }

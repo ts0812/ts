@@ -40,7 +40,7 @@ $this->title = Yii::t('app', '角色管理');
 //            ['class' => 'yii\grid\ActionColumn' ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}  {update}  {delete}  {auth}',
+                'template' => '{view}  {update}  {delete}  {config-auth}',
                 'buttons' => [
 	                'delete' => function ($url, $model, $key) {
 	                	$options = [
@@ -53,7 +53,7 @@ $this->title = Yii::t('app', '角色管理');
 	                	return Html::a('<i class="glyphicon glyphicon-trash	"></i>', $url, $options);
 	                },
                     // 下面代码来自于 yii\grid\ActionColumn 简单修改了下
-                    'auth' => function ($url, $model, $key) {
+                    'config-auth' => function ($url, $model, $key) {
                         $options = [
                             'title' => Yii::t('yii', '权限分配'),
                             'aria-label' => Yii::t('yii', 'auth'),

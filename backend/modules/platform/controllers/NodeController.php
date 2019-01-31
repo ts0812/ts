@@ -14,6 +14,8 @@ use yii\filters\VerbFilter;
  */
 class NodeController extends BaseController
 {
+    public $enableCsrfValidation = false;
+
     /**
      * @inheritdoc
      */
@@ -74,7 +76,6 @@ class NodeController extends BaseController
             'model' => $model,
         ]);
     }
-
     /**
      * Updates an existing Node model.
      * If update is successful, the browser will be redirected to the 'view' page.

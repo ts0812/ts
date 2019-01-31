@@ -78,14 +78,19 @@ class Role extends \yii\db\ActiveRecord {
         $userSalt = ArrayHelper::map(Role::findAll(['role_id' => $rid]), 'role_id', 'role_name');
         return $userSalt[$rid];
     }
-
+    //查询所有有效角色
+    public static function getAllRole(){
+        $rolelists=self::findAll(['role_status'=>1]);
+        return $rolelists?ArrayHelper::map($rolelists,'role_id','role_name'):[];
+    }
     /**
      * 修改权限
      * @param int $roleId 角色id
      * @param array $nowAuthIds 新的权限id 集合
      * @param array $authIds 旧的权限id 集合
      */
-    public static function updateAuth(int $roleId, array $nowAuthIds, array $authIds) { 
+    public static function updateAuth(int $roleId, array $nowAuthIds, array $authIds)
+    {
         //要添加的权限
         $add = array_diff($nowAuthIds, $authIds);
         //要取消的权限
@@ -106,5 +111,4 @@ class Role extends \yii\db\ActiveRecord {
             }
         }
     }
-
 }

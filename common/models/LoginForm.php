@@ -73,6 +73,9 @@ class LoginForm extends Model
         if ($this->_user === null) {
             $this->_user = User::findByUsername($this->username);
             if($this->_user ){
+                if(($this->_user)['status']!=1){
+                    $this->addError('username','该账号已被禁用，请联系管理员');
+                }
                  $this->_user->auth_key = Yii::$app->security->generateRandomString();
              }
         }

@@ -1,12 +1,7 @@
 <?php
-$params = array_merge(
-    require __DIR__ . '/../../common/config/params.php',
-    require __DIR__ . '/../../common/config/params-local.php',
-    require __DIR__ . '/params.php',
-    require __DIR__ . '/params-local.php'
-);
+$params = require __DIR__ . '/params.php';
 
-return [
+$config=[
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
@@ -16,16 +11,13 @@ return [
         'platform' => ['class' => 'backend\modules\platform\Module'],
     ],
     'components' => [
-        'request' => [
-            'csrfParam' => '_csrf-backend',
-        ],
+
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the backend
             'name' => 'advanced-backend',
         ],
         'log' => [
@@ -37,17 +29,32 @@ return [
                 ],
             ],
         ],
+        'db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host='.MYSQL_HOST.';dbname='.MYSQL_DBNAME,
+            'username' => MYSQL_USERNAME,
+            'password' => MYSQL_PASSWOER,
+            'charset' => 'utf8',
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
-        ],
-        */
+
     ],
     'params' => $params,
 ];
+if (YII_ENV_DEV) {
+    $config['components']['assetManager']['forceCopy'] = true;
+    $config['bootstrap'][] = 'debug';
+    $config['modules']['debug'] = [
+        'class' => 'yii\debug\Module',
+        'allowedIPs' => ['127.0.0.1', '::1'],
+    ];
+
+    $config['bootstrap'][] = 'gii';
+    $config['modules']['gii'] = [
+        'class' => 'yii\gii\Module',
+        'allowedIPs' => ['127.0.0.1', '::1'],
+    ];
+}
+return $config;
