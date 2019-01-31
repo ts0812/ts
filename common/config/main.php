@@ -6,7 +6,11 @@ return [
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'language' => 'zh-CN',
+
     'components' => [
+        'request' => [
+            'cookieValidationKey' => 'true',//  就是这里了
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -19,6 +23,5 @@ return [
                 // ...
             ],
         ],
-
     ],
 ];
