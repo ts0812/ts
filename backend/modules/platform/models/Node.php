@@ -72,15 +72,9 @@ class Node extends \yii\db\ActiveRecord
      * @return array
      */
    public static function getAllNodeName() {
-<<<<<<< HEAD
         $nodeRoles = Node::find()->where(['status' => 1])->orderBy('sort DESC')->asArray()->all();
         $levellist = \common\models\Common::list_to_levellist($nodeRoles, 'node_id', 'name', 'pid');
         $list = ['无'] + $levellist;
-=======
-       $nodeRoles = Node::find()->where(['status' => 1])->orderBy('sort DESC')->asArray()->all();
-       $levellist = \common\models\Common::list_to_levellist($nodeRoles, 'node_id', 'name', 'pid');
-       $list = ['无'] + $levellist;
->>>>>>> 36b0c49bb457780d70fe80ddecd1f17c3003a26b
         return $list;
     }
 }
